@@ -38,8 +38,6 @@ def main():
 
 
 # Should be its own file
-# Creating a listener object:
-# override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(StreamListener):
 
   def __init__(self, api):
@@ -58,45 +56,33 @@ class MyStreamListener(StreamListener):
                              'Try to be more clear on what you message means']
 
   def on_status(self, status):
-    author = status.author.name
+    print('-----------------------------------------------')
+    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Doing nothing please -- return') 
+    print('-----------------------------------------------')
+
+  def reply_back(self, status):
+    user_to_reply = status.author.name
     tweet = status.text
-    reply_to_me = tweet[0:7] #Twit_bot name
-    print('-----------------------------------------------')
-    print('Author - ' + author)
+    print('Author - ' + user_to_reply)
     print('Tweet - ' + tweet)
+    print('=================================')
+    if not hasattr(status, 'extended_entities'):
+      return print('Please send me photos with readable text please')
+    if status.extended_entities['media'][0]['type'] != 'photo':
+      return print('Please do not send me GIFS')
     try:
-      print('=================================')
-      if hasattr(status, 'extended_entities'):
-        if status.extended_entities['media'][0]['type'] == 'photo':
-          try:
-            picture_text = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
-            book_link = book_api.find_quote(picture_text)
-            print(book_link)
-          except:
-            print("Something Went Wrong")
-          # self.retweet(reply_to_me, book_link)
-        else:
-          print('Please do not send me GIFS')
-      else:
-        print('Please send me media objects')
-      print('=================================')
+      picture_text = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
+      book_link = book_api.find_quote(picture_text)
+      self.api.update_status('@'+ user_to_reply + " " + book_link)
+      # self.api.send_direct_message(status.author.id_str, "Please type direct message here") # Need Direct messages permission
+      print(book_link)
+      sleep(5)
     except tweepy.TweepError as e:
-        print(e.reason)
-        sleep(5)
-    print('-----------------------------------------------')
+      print("Something Went Wrong")
+      print(e.reason)
+      sleep(5)
 
-  """
-  Have to limit tweets to 120 characters
-  """
-  # Gives a tweet 
-  def tweet(message):
-    self.api.update_status(message)
-
-  # tweets back to the given author with the message
-  def retweet(author, message):
-    self.api.update_status('@' + author + " " + message)
-
-  # Might want to lok at backoff strategies
+  # Might want to look at backoff strategies
   def on_error(self, tweet_code):
     # returning False in on_error disconnects the stream
     # returning non-False reconnects the stream, with backoff.
