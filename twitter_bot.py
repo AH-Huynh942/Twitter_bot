@@ -20,10 +20,9 @@ from tweepy.streaming import Stream, StreamListener
 # (0) Have to limit the input text given (string parsing/trucation)
 # (0) Improve accuracy of ocr *************** lot of variables
 # (0) Improve accuracy of book links *********** lot of variables
-# (1) Search (viable Google) for who was the original author of the quote -- IDENTIFY ISBN NUMBER
-# (2) Create a url link that links to online merchant using ISBN and Affliate Code
+# Question --> What happens when you can't find the exact book --> Look for alternatives
 # (extra) Cross reference with other sources for clarity
-# (Maybe) Add where he quoted it from
+# (extra) We can look up books with ASIN number as well
 # ------------------------------------------------------------------------------------------
 
 def main():
@@ -42,22 +41,14 @@ class MyStreamListener(StreamListener):
 
   def __init__(self, api):
     self.api = api
-    # TODO: Need to check own name 
-    # self.name = my_name
-    
     # work around for ending with duplicate replies (50 - 100 different replies)
-    self.possible_replies = ["Hey, I'm sorry. I didn't get that",
-                             "Umm... I'm sorry, I didn't get your reply.",
-                             'Please try a different message',
-                             "I don't know what you're trying to say, please be more specific",
-                             'Huh... I did not get that...',
-                             'What is it are you trying to say',
-                             'Hmm... The message you sent is hard to interpret',
-                             'Try to be more clear on what you message means']
+    self.possible_replies = ["Hey, I'm sorry. I didn't get that", "Umm... I'm sorry, I didn't get your reply.", 'Please try a different message', "I don't know what you're trying to say, please be more specific", 'Huh... I did not get that...','What is it are you trying to say','Hmm... The message you sent is hard to interpret', 'Try to be more clear on what you message means']
 
   def on_status(self, status):
     print('-----------------------------------------------')
-    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Doing nothing please -- return') 
+    # self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Doing nothing please -- return') 
+    self.reply_back(status)
+    # sleep(5)
     print('-----------------------------------------------')
 
   def reply_back(self, status):
@@ -71,16 +62,17 @@ class MyStreamListener(StreamListener):
     if status.extended_entities['media'][0]['type'] != 'photo':
       return print('Please do not send me GIFS')
     try:
-      picture_text = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
-      book_link = book_api.find_quote(picture_text)
-      self.api.update_status('@'+ user_to_reply + " " + book_link)
+      picture_text = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url']) # TODO: Fix if you do not have any picture text
+      book_searches = book_api.find_quote(picture_text) # TODO: Fix if you do not get any book reference, TODO: Fix if you have more than one matches not just get the first
+      url_link = 'https://amazon.ca/dp/' + book_searches + '/?tag=' + config.amazon_id
+
+      self.api.update_status(url_link) # TODO MUST LIMIT THE CHARACTERS TO 120
+      # self.api.update_status('@'+ user_to_reply + " " + url_link)
       # self.api.send_direct_message(status.author.id_str, "Please type direct message here") # Need Direct messages permission
-      print(book_link)
-      sleep(5)
+      # print(url_link)
     except tweepy.TweepError as e:
-      print("Something Went Wrong")
-      print(e.reason)
-      sleep(5)
+      print("'************ Something Went Wrong ************'")
+      print('************' + e.response.text + '************')
 
   # Might want to look at backoff strategies
   def on_error(self, tweet_code):
