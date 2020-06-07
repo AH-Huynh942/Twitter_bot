@@ -47,9 +47,9 @@ class MyStreamListener(StreamListener):
     print('-----------------------------------------------')
 
   def reply_back(self, status):
-    user_to_reply = status.author.name
+    asking_user = status.author.name
     tweet = status.text
-    print('Author - ' + user_to_reply)
+    print('Author - ' + asking_user)
     print('Tweet - ' + tweet)
     print('=================================')
     if not hasattr(status, 'extended_entities'):
@@ -57,14 +57,16 @@ class MyStreamListener(StreamListener):
     if status.extended_entities['media'][0]['type'] != 'photo':
       return print(self.error_replies[1])
     try:
-      picture_text = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
-      book_searches = book_api.find_quote(picture_text) # TODO: Fix if you have more than one matches not just get the first
+      pict_txt = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
+      if len(pict_txt) > 500:
+        pict_txt = pict_txt[:500]
+        if '.' in pict_txt:
+          pict_txt = pict_txt[: -pict_txt[::-1].find('.')]
+      book_searches = book_api.find_quote(pict_txt)
       if (book_searches == 2 or book_searches == 3):
         return print(self.error_replies[book_searches])
       url_link = 'https://amazon.ca/dp/' + book_searches + '/?tag=' + config.amazon_id
-      message = url_link
-      print(message.__len__)
-      self.api.update_status(message) # TODO MUST LIMIT THE CHARACTERS TO 120
+      self.api.update_status(url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
       # self.api.update_status('@'+ user_to_reply + " " + url_link)
       # self.api.send_direct_message(status.author.id_str, "Please type direct message here") # Need Direct messages permission
       # print(url_link)
