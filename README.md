@@ -1,7 +1,3 @@
-### Developer - Andy Huynh ###
-### In Association with - Tyler Burton ###
-
-
 _In order use this application, you must create a config python file (config.py) with the following variables._
 #### config.py template: ####
 
@@ -19,13 +15,13 @@ _In order use this application, you must create a config python file (config.py)
 
         amazon_id = '**********'
 
-        # example --> amazon_id = 'trevor89-20'
+        # amazon_id = 'trevor89-20'
 
-**Twitter ID (What ever twitter account your using - simply type in your username to a twitter-id identifier to get this number)**
+**Twitter ID (What ever twitter account your using - simply type in your handle name to a twitter-id identifier to get this number)**
 
         follower = '*******************'
 
-        # example --> follower = '6652432687659145466'
+        # @x_kelf => 1254496312722100225
 
 **OCR API Key (Signup for free account to get api key - https://ocr.space/)**
 
