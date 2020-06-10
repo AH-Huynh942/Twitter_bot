@@ -1,4 +1,4 @@
-_In order use this application, you must create a config python file (config.py) with the following variables._
+_In order use this application, you must create a config python file (config.py) with the following variables and then run twitter_bot python file._
 #### config.py template: ####
 
 **Twitter Developer Keys (Signup for Twitter Developer and create an application thus and give write/access/direct permission - https://developer.twitter.com/en/apply-for-access)**
