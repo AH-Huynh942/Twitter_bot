@@ -15,7 +15,10 @@ from tweepy.streaming import Stream, StreamListener
 # 
 # Main Function: Respond to #FigureOutWhereThisQuoteIsFrom
 # TODO:
-# (extra) Cross reference with other sources for clarity
+# (extra) Cross reference with other sources for clarity i.e Open Library API, ISBNdb API
+# (extra) Add: Oxford dictionary api, Quotes REST api (They Said So Quotes API), Literature Online API 
+# (extra) Add: ISBNdb api, SearchItems api, 
+# (1) No matter what quote from a book, should always get a reliable amazon link.
 # ------------------------------------------------------------------------------------------
 
 def main():
@@ -29,46 +32,50 @@ def main():
   stream.filter(follow = [config.follower]) # Will Change to @WhatBookIsThat
 
 
-# Should be its own file
 class MyStreamListener(StreamListener):
 
   def __init__(self, api):
     self.api = api
     self.error_replies = ('Hey! Please send me photos with readable text please.',
     'Please do not send me GIFS...',
-    'I cannot find any text with picture you gave me. Maybe try another picture please.',
-    'I cannot find any results with the text you gave me. Maybe try a different quote.' )
+    'I cannot find any text with the picture you gave me. Maybe try another picture please.',
+    'I cannot find any results with the text you gave me. Maybe try a different quote please.' )
 
   def on_status(self, status):
     print('-----------------------------------------------')
-    # self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Doing nothing please -- return') 
-    self.reply_back(status)
-    # sleep(5)
+    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Doing nothing please -- return') 
+    time.sleep(5)
     print('-----------------------------------------------')
 
   def reply_back(self, status):
-    asking_user = status.author.name
+    user_name = status.user.screen_name
     tweet = status.text
-    print('Author - ' + asking_user)
+    user_id = status.user.id_str
+    print('Author - ' + user_name)
     print('Tweet - ' + tweet)
     print('=================================')
     if not hasattr(status, 'extended_entities'):
-      return print(self.error_replies[0])
+      return self.api.send_direct_message(user_id, (self.error_replies[0]))
     if status.extended_entities['media'][0]['type'] != 'photo':
-      return print(self.error_replies[1])
+      return self.api.send_direct_message(user_id, (self.error_replies[1]))
     try:
+
       pict_txt = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
       if len(pict_txt) > 500:
         pict_txt = pict_txt[:500]
         if '.' in pict_txt:
           pict_txt = pict_txt[: -pict_txt[::-1].find('.')]
+
       book_searches = book_api.find_quote(pict_txt)
       if (book_searches == 2 or book_searches == 3):
-        return print(self.error_replies[book_searches])
-      url_link = 'https://amazon.ca/dp/' + book_searches + '/?tag=' + config.amazon_id
-      self.api.update_status(url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
-      # self.api.update_status('@'+ user_to_reply + " " + url_link)
-      # self.api.send_direct_message(status.author.id_str, "Please type direct message here") # Need Direct messages permission
+        return self.api.send_direct_messages(user_id,(self.error_replies[book_searches]))
+      
+      #Extra step -- Scan for related products using the ISBN given (multiple ASIN is prefered)      
+      
+      url_link =  'https://amazon.ca/dp/' + book_searches + '/?tag=' + config.amazon_id
+      
+      self.api.update_status('@'+ user_name + " " + url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
+      self.api.send_direct_message(user_id, "Is this the book your looking for") # Need Direct messages permission
       # print(url_link)
     except tweepy.TweepError as e:
       print("'************ Something Went Wrong ************'")
@@ -91,7 +98,6 @@ class MyStreamListener(StreamListener):
     if tweet_code == 226: #Spam error
       return True
 
-# Should be its own file
 def setup_api():
   api_key = config.api_key
   api_secret = config.api_secret
