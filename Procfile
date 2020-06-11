@@ -1,1 +1,1 @@
-py -3 twitter_bot.py
+py twitter_bot.py
