@@ -4,6 +4,7 @@ import os
 import config
 import ocr
 import book_api
+import stringfix
 import requests
 
 from tweepy.auth import OAuthHandler
@@ -18,6 +19,7 @@ from tweepy.streaming import Stream, StreamListener
 # (extra) Cross reference with other sources for clarity i.e Open Library API, ISBNdb API
 # (extra) Add: Oxford dictionary api, Quotes REST api (They Said So Quotes API), Literature Online API 
 # (extra) Add: ISBNdb api, SearchItems api, 
+# (0) Still need to buy improve on the ocr text interpretation
 # (1) No matter what quote from a book, should always get a reliable amazon link.
 # ------------------------------------------------------------------------------------------
 
@@ -43,8 +45,9 @@ class MyStreamListener(StreamListener):
 
   def on_status(self, status):
     print('-----------------------------------------------')
-    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Doing nothing please -- return') 
-    time.sleep(5)
+    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Replying...') 
+    # self.reply_back(status) 
+    # time.sleep(5)
     print('-----------------------------------------------')
 
   def reply_back(self, status):
@@ -59,23 +62,21 @@ class MyStreamListener(StreamListener):
     if status.extended_entities['media'][0]['type'] != 'photo':
       return self.api.send_direct_message(user_id, (self.error_replies[1]))
     try:
-
+      fixed_txt = ''
       pict_txt = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
-      if len(pict_txt) > 500:
-        pict_txt = pict_txt[:500]
-        if '.' in pict_txt:
-          pict_txt = pict_txt[: -pict_txt[::-1].find('.')]
-
-      book_searches = book_api.find_quote(pict_txt)
+      fixed_txt = stringfix.fix_text(pict_txt)
+      print(fixed_txt)
+      book_searches = book_api.find_quote(fixed_txt)
+      print(book_searches)
       if (book_searches == 2 or book_searches == 3):
-        return self.api.send_direct_messages(user_id,(self.error_replies[book_searches]))
+        return self.api.send_direct_message(user_id,(self.error_replies[book_searches]))
       
       #Extra step -- Scan for related products using the ISBN given (multiple ASIN is prefered)      
       
       url_link =  'https://amazon.ca/dp/' + book_searches + '/?tag=' + config.amazon_id
       
       self.api.update_status('@'+ user_name + " " + url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
-      self.api.send_direct_message(user_id, "Is this the book your looking for") # Need Direct messages permission
+      self.api.send_direct_message(user_id, "Is this the book your looking for? - " + url_link) # Need Direct messages permission
       # print(url_link)
     except tweepy.TweepError as e:
       print("'************ Something Went Wrong ************'")

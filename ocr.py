@@ -47,6 +47,8 @@ def ocr_url(url, overlay=False, api_key= ocr_key, language='eng'):
 
     payload = {'url': url,
                'isOverlayRequired': overlay,
+               'scale': True,
+            #    'OCREngine': 2, 
                'apikey': api_key,
                'language': language,
                }
