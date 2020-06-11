@@ -1,3 +1,8 @@
+**_Prior Steps:_**
+In the event that you have never used python before installed - goto https://www.python.org/ to download and install the latest python version (python 3.0+)
+Afterwards, in a terminal (cmd prompt) type in the following line 
+        pip install git+https://github.com/tweepy/tweepy.git
+   
 _In order use this application, you must create a config python file (config.py) with the following variables and then run twitter_bot python file._
 #### config.py template: ####
 
