@@ -110,4 +110,8 @@ def setup_api():
 
 if __name__ == '__main__':
   main()
+  while True:
+    # Check for tweets
+    time.sleep(30)
+
 
