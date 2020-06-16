@@ -25,6 +25,8 @@ from tweepy.streaming import Stream, StreamListener
 
 def main():
   api = setup_api()
+  api.update_status('Hello and welcome to the world of tommorow!')
+  return api
   '''
   api.update_status # Create stream connection
   
@@ -101,13 +103,17 @@ class MyStreamListener(StreamListener):
       return True
 
 def setup_api():
-  api_key = config('TWITTER_API_KEY')
-  api_secret = config('TWITTER_API_SECRET_KEY')
-  access_token = config('TWITTER_API_TOKEN_ACCESS')
-  token_secret = config('TWITTER_API_TOKEN_SECRET')
+  api_key = os.environ['TWITTER_API_KEY']
+  api_secret = os.environ['TWITTER_API_SECRET_KEY']
+  access_token = os.environ['TWITTER_API_TOKEN_ACCESS']
+  token_secret = os.environ['TWITTER_API_TOKEN_SECRET']
   auth = OAuthHandler(api_key, api_secret)
   auth.set_access_token(access_token,token_secret)
   return API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 if __name__ == '__main__':
-  main()
+  api = main()
+
+  while True:
+    api.update_status('3243223432432432432')
+    time.sleep(3000)
