@@ -1,11 +1,11 @@
 import tweepy
 import time
 import os
-import config
 import ocr
 import book_api
 import stringfix
 import requests
+from decouple import config
 
 from tweepy.auth import OAuthHandler
 from tweepy.api import API
@@ -103,7 +103,7 @@ class MyStreamListener(StreamListener):
 def setup_api():
   api_key = os.environ['TWITTER_API_KEY']
   api_secret = os.environ['TWITTER_API_SECRET_KEY']
-  access_token = os.environ['TWITTER_API_TOKEN_KEY']
+  access_token = os.environ['TWITTER_API_TOKEN_ACCESS']
   token_secret = os.environ['TWITTER_API_TOKEN_SECRET']
   auth = OAuthHandler(api_key, api_secret)
   auth.set_access_token(access_token,token_secret)
