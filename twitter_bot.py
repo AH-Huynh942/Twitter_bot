@@ -25,6 +25,7 @@ from tweepy.streaming import Stream, StreamListener
 
 def main():
   api = setup_api()
+  '''
   api.update_status # Create stream connection
   
   streamLister = MyStreamListener(api)
@@ -32,7 +33,7 @@ def main():
   
   # start stream
   stream.filter(follow = os.environ['TWITTER_ID']) # Will Change to @WhatBookIsThat
-
+'''
 
 class MyStreamListener(StreamListener):
 
