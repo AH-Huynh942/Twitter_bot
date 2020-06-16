@@ -31,7 +31,7 @@ def main():
   stream = Stream(auth = api.auth, listener = streamLister)
   
   # start stream
-  stream.filter(follow = [config.follower]) # Will Change to @WhatBookIsThat
+  stream.filter(follow = os.environ['TWITTER_ID']) # Will Change to @WhatBookIsThat
 
 
 class MyStreamListener(StreamListener):
@@ -45,7 +45,7 @@ class MyStreamListener(StreamListener):
 
   def on_status(self, status):
     print('-----------------------------------------------')
-    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Replying...') 
+    self.reply_back(status) if os.environ['TWITTER_ID'] == status.in_reply_to_user_id_str else print('Replying...') 
     # self.reply_back(status) 
     # time.sleep(5)
     print('-----------------------------------------------')
@@ -73,7 +73,7 @@ class MyStreamListener(StreamListener):
       
       #Extra step -- Scan for related products using the ISBN given (multiple ASIN is prefered)      
       
-      url_link =  'https://amazon.ca/dp/' + book_searches + '/?tag=' + config.amazon_id
+      url_link =  'https://amazon.ca/dp/' + book_searches + '/?tag=' + os.environ['AMAZON_ID']
       
       self.api.update_status('@'+ user_name + " " + url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
       self.api.send_direct_message(user_id, "Is this the book your looking for? - " + url_link) # Need Direct messages permission
@@ -100,18 +100,14 @@ class MyStreamListener(StreamListener):
       return True
 
 def setup_api():
-  api_key = config.api_key
-  api_secret = config.api_secret
-  access_token = config.access_token
-  token_secret = config.token_secret
+  api_key = os.environ['TWITTER_API_KEY']
+  api_secret = os.environ['TWITTER_API_SECRET_KEY']
+  access_token = os.environ['TWITTER_API_TOKEN_KEY']
+  token_secret = os.environ['TWITTER_API_TOKEN_SECRET']
   auth = OAuthHandler(api_key, api_secret)
   auth.set_access_token(access_token,token_secret)
   return API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 if __name__ == '__main__':
   main()
-  while True:
-    # Check for tweets
-    time.sleep(30)
-
 

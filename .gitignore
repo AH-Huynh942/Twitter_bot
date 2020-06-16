@@ -1,3 +1,5 @@
 config.py
 __pycache__
-test.pypyth
+test.py
+.env
+.bash_profile
