@@ -101,14 +101,13 @@ class MyStreamListener(StreamListener):
       return True
 
 def setup_api():
-  api_key = os.environ['TWITTER_API_KEY']
-  api_secret = os.environ['TWITTER_API_SECRET_KEY']
-  access_token = os.environ['TWITTER_API_TOKEN_ACCESS']
-  token_secret = os.environ['TWITTER_API_TOKEN_SECRET']
+  api_key = config('TWITTER_API_KEY')
+  api_secret = config('TWITTER_API_SECRET_KEY')
+  access_token = config('TWITTER_API_TOKEN_ACCESS')
+  token_secret = config('TWITTER_API_TOKEN_SECRET')
   auth = OAuthHandler(api_key, api_secret)
   auth.set_access_token(access_token,token_secret)
   return API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 if __name__ == '__main__':
   main()
-
