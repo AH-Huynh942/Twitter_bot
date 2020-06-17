@@ -1,6 +1,9 @@
 # import env
-from os import environ
-print(environ.get('HOME'))
+import config
+
+print(config.api_key)
+
+
 # print(config('TWITTER_API_KEY'))
 # print(config('TWITTER_API_SECRET_KEY'))
 # print(config('TWITTER_API_TOKEN_ACCESS'))
