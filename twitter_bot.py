@@ -6,7 +6,7 @@ import book_api
 import stringfix
 import requests
 import random
-from decouple import config
+import config
 
 from tweepy.auth import OAuthHandler
 from tweepy.api import API
