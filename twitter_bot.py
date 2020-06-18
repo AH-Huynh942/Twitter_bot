@@ -1,12 +1,11 @@
 import tweepy
 import time
 import os
+import config
 import ocr
 import book_api
 import stringfix
 import requests
-import random
-import config
 
 from tweepy.auth import OAuthHandler
 from tweepy.api import API
@@ -26,14 +25,14 @@ from tweepy.streaming import Stream, StreamListener
 
 def main():
   api = setup_api()
-
   api.update_status # Create stream connection
   
   streamLister = MyStreamListener(api)
   stream = Stream(auth = api.auth, listener = streamLister)
   
   # start stream
-  stream.filter(follow = config.follower) # Will Change to @WhatBookIsThat
+  stream.filter(follow = [config.follower]) # Will Change to @WhatBookIsThat
+
 
 class MyStreamListener(StreamListener):
 
