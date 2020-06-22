@@ -21,6 +21,8 @@ from tweepy.streaming import Stream, StreamListener
 # (extra) Add: ISBNdb api, SearchItems api, 
 # (0) Still need to buy improve on the ocr text interpretation
 # (1) No matter what quote from a book, should always get a reliable amazon link.
+# TODO: FIX STUPID ERROR WITH @ replying
+# TODO: ADD MORE PROGRAMMING ASSURANCES
 # ------------------------------------------------------------------------------------------
 
 def main():
@@ -106,6 +108,7 @@ def setup_api():
   token_secret = config.token_secret
   auth = OAuthHandler(api_key, api_secret)
   auth.set_access_token(access_token,token_secret)
+  # TODO: callback function with connection
   return API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
 if __name__ == '__main__':

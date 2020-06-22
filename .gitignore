@@ -3,3 +3,5 @@ __pycache__
 test.py
 .env
 .bash_profile
+.node_modules
+node_modules
