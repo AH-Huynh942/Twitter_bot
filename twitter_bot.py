@@ -21,8 +21,9 @@ from tweepy.streaming import Stream, StreamListener
 # (extra) Add: ISBNdb api, SearchItems api, 
 # (0) Still need to buy improve on the ocr text interpretation
 # (1) No matter what quote from a book, should always get a reliable amazon link.
-# TODO: FIX STUPID ERROR WITH @ replying
 # TODO: ADD MORE PROGRAMMING ASSURANCES
+# TODO: Make a list of wanted statistics data, --> write to database library.
+# Tweepy: Streamlistener Object Doc: https://github.com/tweepy/tweepy/blob/78d2883a922fa5232e8cdfab0c272c24b8ce37c4/tweepy/streaming.py
 # ------------------------------------------------------------------------------------------
 
 def main():
@@ -45,14 +46,40 @@ class MyStreamListener(StreamListener):
     'I cannot find any text with the picture you gave me. Maybe try another picture please.',
     'I cannot find any results with the text you gave me. Maybe try a different quote please.' )
 
+  def on_connect(self):
+    """Called once connected to streaming server"""
+    print('-----------------------------------------------')
+    print("\n Success! Connection connected to streaming server \n ")
+    print('-----------------------------------------------')
+
   def on_status(self, status):
     print('-----------------------------------------------')
-    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Replying...') 
-    # self.reply_back(status) 
-    # time.sleep(5)
+    # self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Replying...') 
+    print("\n On_status \n")
     print('-----------------------------------------------')
 
   def reply_back(self, status):
+    """
+    STATISTICS THAT NEED TO BE LOGGED:
+    
+    DATE & TIME OF TWEET,
+    AUTHOR OF TWEET,
+    TWEET TEXT,
+    TWEET LINK,
+    AUTHOR OF BOOK,
+    TITLE OF BOOK,
+    ISBN (RESULT),
+    AMAZON LINK,
+    RESULT LINK (FROM GOOGLE BOOKS),
+    NUMBER OF RESULTS FOUND,
+    WHATISTHATBOOK REPLY CODE,
+
+    IF ERROR -- LOG THE ERROR!
+
+    extra:
+    results of the 2nd and 3rd most relevant result
+    """
+
     user_name = status.user.screen_name
     tweet = status.text
     user_id = status.user.id_str
@@ -79,27 +106,34 @@ class MyStreamListener(StreamListener):
       
       self.api.update_status('@'+ user_name + " " + url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
       self.api.send_direct_message(user_id, "Is this the book your looking for? - " + url_link) # Need Direct messages permission
-      # print(url_link)
+      print('=================================')
     except tweepy.TweepError as e:
       print("'************ Something Went Wrong ************'")
       print('************' + e.response.text + '************')
 
-  # Might want to look at backoff strategies
+  def on_limit(self, track):
+    """Called when stream connection times out"""
+    print("----------------- ON TIMEOU ---------------------")
+    print(track)
+    print("----------------- ON TIMEOU ---------------------")
+
+  def on_warning(self, notice):
+    """Called when a disconnection warning message arrives"""
+    print("----------------- ON WARNING ---------------------")
+    print(notice)
+    print("----------------- ON WARNING ---------------------")
+
+  def on_disconnect(self, notice):
+    """Called when twitter sends a disconnect notice"""
+    print("----------------- ON DISCONNECT -------------------")
+    print (notice) # Add to database erro
+    print("----------------- ON DISCONNECT -------------------")
+
   def on_error(self, tweet_code):
-    # returning False in on_error disconnects the stream
-    # returning non-False reconnects the stream, with backoff.
-    if tweet_code == 420: 
-      return False
-    if tweet_code == 187: #Status is duplicate error
-      return True
-    if tweet_code == 160: #Already followed error
-      return True
-    if tweet_code == 139: #Already favorited error
-      return True
-    if tweet_code == 327: #Already retweeted the same tweet more than once
-      return True
-    if tweet_code == 226: #Spam error
-      return True
+    """Called when a non-200 status code is returned"""
+    print("----------------- ON ERROR ---------------------")
+    print(tweet_code)
+    print("----------------- ON ERROR ---------------------")
 
 def setup_api():
   api_key = config.api_key
