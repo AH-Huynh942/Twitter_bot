@@ -19,6 +19,7 @@ def ocr_file(filename, overlay=False, api_key=ocr_key, language='eng'):
     payload = {'isOverlayRequired': overlay,
                'apikey': api_key,
                'language': language,
+            #    'scale',
                }
     with open(filename, 'rb') as f:
         r = requests.post('https://api.ocr.space/parse/image',
@@ -28,6 +29,10 @@ def ocr_file(filename, overlay=False, api_key=ocr_key, language='eng'):
 
     # return r.content.decode() <-- returns a string
     # return r.json() # <-- returns json
+    print('********************OCR JSON***********************\n')
+    print(r.json())
+    print('\n')
+    print('********************OCR JSON***********************\n')
     return r.json()['ParsedResults'][0]['ParsedText'] # <-- returns the interpreted string
 
 

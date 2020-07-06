@@ -6,6 +6,7 @@ import ocr
 import book_api
 import stringfix
 import requests
+import language_tool_python
 
 from tweepy.auth import OAuthHandler
 from tweepy.api import API
@@ -45,6 +46,7 @@ class MyStreamListener(StreamListener):
     'Please do not send me GIFS...',
     'I cannot find any text with the picture you gave me. Maybe try another picture please.',
     'I cannot find any results with the text you gave me. Maybe try a different quote please.' )
+    self.tool = language_tool_python.LanguageTool('en-US')
 
   def on_connect(self):
     """Called once connected to streaming server"""
@@ -53,9 +55,9 @@ class MyStreamListener(StreamListener):
     print('-----------------------------------------------')
 
   def on_status(self, status):
-    print('-----------------------------------------------')
-    # self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Replying...') 
-    print("\n On_status \n")
+    print('----------------ON STATUS--------------------')
+    self.reply_back(status) if config.follower == status.in_reply_to_user_id_str else print('Replying...') 
+    # print("\n On_status \n")
     print('-----------------------------------------------')
 
   def reply_back(self, status):
@@ -83,8 +85,10 @@ class MyStreamListener(StreamListener):
     user_name = status.user.screen_name
     tweet = status.text
     user_id = status.user.id_str
+    print('Created - ' + status.created_at)
     print('Author - ' + user_name)
     print('Tweet - ' + tweet)
+    print('Tweet link -' + )
     print('=================================')
     if not hasattr(status, 'extended_entities'):
       return self.api.send_direct_message(user_id, (self.error_replies[0]))
@@ -93,6 +97,9 @@ class MyStreamListener(StreamListener):
     try:
       fixed_txt = ''
       pict_txt = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url'])
+        print("**************Unfixed Text***************")
+        print(pict_txt)
+        print("**************Unfixed Text***************")
       fixed_txt = stringfix.fix_text(pict_txt)
       print(fixed_txt)
       book_searches = book_api.find_quote(fixed_txt)
@@ -109,7 +116,7 @@ class MyStreamListener(StreamListener):
       print('=================================')
     except tweepy.TweepError as e:
       print("'************ Something Went Wrong ************'")
-      print('************' + e.response.text + '************')
+      print(e.response)
 
   def on_limit(self, track):
     """Called when stream connection times out"""
@@ -134,6 +141,13 @@ class MyStreamListener(StreamListener):
     print("----------------- ON ERROR ---------------------")
     print(tweet_code)
     print("----------------- ON ERROR ---------------------")
+    return True # Aborts stream disconnection
+  
+  def on_timeout(self, notice):
+    print("----------------- ON TIMEOUT ---------------------")
+    print(notice)
+    print("----------------- ON TIMEOUT ---------------------")
+    # return True # Aborts stream disconnection
 
 def setup_api():
   api_key = config.api_key
