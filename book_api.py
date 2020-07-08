@@ -8,14 +8,14 @@ def find_quote(q, maxResults = 3, projection = 'full',  ):
     r = requests.get(url)
     if 'totalItems' not in r.json():
         # print('There is no totalItems')
-        return 2
+        return 'NO TEXT'
     if (r.json()['totalItems'] <= 0):
         # print('TotalItems is less than 0')
-        return 3
+        return 'NO RESULTS'
     if (len(r.json()['items'][0]['volumeInfo']['industryIdentifiers']) > 1):
         return r.json()['items'][0]['volumeInfo']['industryIdentifiers'][1]['identifier']
     else:
-        return 3
+        return 'NO RESULTS'
 
 def quote(q, maxResults = 3, projection = 'full',  ):
     printType = 'books'
@@ -23,10 +23,10 @@ def quote(q, maxResults = 3, projection = 'full',  ):
     r = requests.get(url)
     if 'totalItems' not in r.json():
         # print('There is no totalItems')
-        return 2
+        return 'NO TEXT'
     if (r.json()['totalItems'] <= 0):
         # print('TotalItems is less than 0')
-        return 3
+        return 'NO RESULTS'
     if (len(r.json()['items'][0]['volumeInfo']['industryIdentifiers']) > 1):
         print("**************Book Info Given***************\n")
         print(r.json())
@@ -34,4 +34,4 @@ def quote(q, maxResults = 3, projection = 'full',  ):
         print("**************Book Info Given***************\n")
         return r.json()['items'][0]['volumeInfo']['industryIdentifiers'][1]['identifier']
     else:
-        return 3
+        return 'NO RESULTS'

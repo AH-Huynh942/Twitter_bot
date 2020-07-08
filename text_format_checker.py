@@ -204,11 +204,11 @@ def check_text_format(texts):
     return final_data, over_all_count
 
 
-if __name__ == '__main__':
-    s1 = "hello .hoW are you www.xyz.com? i hope all  good. iPhone is working now."
-    s2 = "I work at Google. where do you work?"
-    s3 = "abc@xyz.com"
+# if __name__ == '__main__':
+#     s1 = "hello .hoW are you www.xyz.com? i hope all  good. iPhone is working now."
+#     s2 = "I work at Google. where do you work?"
+#     s3 = "abc@xyz.com"
 
-    data, total_mistakes = check_text_format([s1, s2, s3])
-    print('\nTotal mistakes: ', total_mistakes, '\n')
-    [print('Text number: {0}    Info dict: {1}'.format(i, x)) for i, x in enumerate(data)]
+#     data, total_mistakes = check_text_format([s1, s2, s3])
+#     print('\nTotal mistakes: ', total_mistakes, '\n')
+#     [print('Text number: {0}    Info dict: {1}'.format(i, x)) for i, x in enumerate(data)]

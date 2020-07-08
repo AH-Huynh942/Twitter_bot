@@ -62,7 +62,24 @@ def ocr_url(url, overlay=False, api_key= ocr_key, language='eng'):
                       )
     # return r.content.decode() # <-- returns entire object as string
     # return r.json() # <-- returns json
-    return r.json()['ParsedResults'][0]['ParsedText'] # <-- returns the interpreted string
+    json = r.json()
+    print('********************OCR JSON***********************\n')
+    print(json)
+    print('\n')
+    print('********************OCR JSON***********************\n')
+    if 'OCRExiteCode' in json:
+        print (json['OCRExiteCode'])
+        if 'ErrorMessage' in json:
+            if json['ErrorMessage'] == 'Unable to recognize the file type':
+                return 0 # file type wrong
+    if 'ParsedResults' in json:
+        if not len(json['ParsedResults']) > 0:
+            return 1 # No ParsedResults                
+    try:
+        result = r.json()['ParsedResults'][0]['ParsedText']
+    except:
+        return 2 # Overall Error
+    return result # <-- returns the interpreted string
 
 
 # Use examples:
