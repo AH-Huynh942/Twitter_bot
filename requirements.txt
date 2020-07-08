@@ -37,3 +37,4 @@ urllib3==1.25.9
 wcwidth==0.1.9
 pyspellchecker==0.5.4
 nltk==3.5
+language-tool-python==2.2.3
