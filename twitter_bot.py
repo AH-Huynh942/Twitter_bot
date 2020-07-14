@@ -6,7 +6,8 @@ import ocr
 import book_api
 import stringfix
 import requests
-import language_tool_python
+import random
+# import language_tool_python
 
 from tweepy.auth import OAuthHandler
 from tweepy.api import API
@@ -29,39 +30,43 @@ from tweepy.streaming import Stream, StreamListener
 
 def main():
   api = setup_api()
-  api.update_status # Create stream connection
+  # api.update_status # Create stream connection
   
   streamLister = MyStreamListener(api)
   stream = Stream(auth = api.auth, listener = streamLister)
   
   # start stream
-  stream.filter(follow = [config.follower]) # Will Change to @WhatBookIsThat
+  stream.filter(follow = [config.follower])
 
+  '''
+  Used to put daily streaming via multi-threading
+  '''
+  # stream.filter(follow = [config.follower], is_async = True)
+  # while True:
+  #   api.update_status(str(random.randint(1,1000)))
+  #   time.sleep(60)
 
 class MyStreamListener(StreamListener):
 
   def __init__(self, api):
     self.api = api
     self.twitter_ids = {}
-    self.no_media_replies = (' You did not tweet me an image. Next time, give me photos with readable text please.',
+    self.no_media = (' You did not tweet me an image. Next time, give me photos with readable text please.',
     ' Once again, you did not give me an image to interpret. Please send me a picture of the book your quoting.',
     ' I am getting tired of reminding you to tweet me images... Please give me a graphic, preferable with some writing.',
-    ' I am tired of reminding you... This is an automatic message - 1',
-    ' I am tired of reminding you... This is an automatic message - 2',
-    ' I am tired of reminding you... This is an automatic message - 3',
-    ' I am tired of reminding you... This is an automatic message - 4',
-    ' I am tired of reminding you... This is an automatic message - 5',)
-    self.not_photo_replies = (' Please do not send me GIFS, images instead would be great!',
+    ' I am tired of reminding you... This is an automatic message. I am going to stop messaging you after three more attempts - 1',
+    ' I am tired of reminding you... This is an automatic message. I am going to stop messaging you after three more attempts - 2',
+    ' I am tired of reminding you... This is an automatic message. I am going to stop messaging you after three more attempts - 3',)
+    self.not_photo = (' Please do not send me GIFS, images instead would be great!',
     ' I do not read other media, I only read photos please.',
     ' Huh, that does not look like an image to me... I reminded you right?',
-    ' Okay, stop it. this is just going to be an automated message now... - 1',
-    ' Okay, stop it. this is just going to be an automated message now... - 2',
-    ' Okay, stop it. this is just going to be an automated message now... - 3',
-    ' Okay, stop it. this is just going to be an automated message now... - 4',
-    ' Okay, stop it. this is just going to be an automated message now... - 5',)
-    self.no_text_with_pic_replies = (' I did not find any text in the image you sent me - ', ' Huh, still no text found, that is odd')
-    self.no_results_with_pic_replies = (' I did get any results in the text you sent me - ', ' I could not get any results for some reason, maybe send another pic')
-    self.encountered_error_replies = (' The file type seems to not be correct - ', ' Sorry there must be congestion with the OCR - ', ' Huh, the photo does not be a ledgeable format - ')
+    ' Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts - 1',
+    ' Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts - 2',
+    ' Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts - 3',)
+    self.no_text_with_pic = (' I did not find any text in the image you sent me - ', ' Huh, still no text found, that is odd')
+    self.no_results_with_pic = (' I did get any results in the text you sent me - ', ' I could not get any results for some reason, maybe send another pic')
+    self.encountered_error = (' The file type seems to not be correct - ', ' Sorry there must be congestion with the OCR - ', ' Huh, the photo does not be a ledgeable format - ')
+    self.multiple_images = (' I only accept the first inital image, all the other images I ignore. - ')
     # self.tool = language_tool_python.LanguageTool('en-US')
     
     # self.error_replies = ('Hey! Please send me photos with readable text please.',
@@ -79,7 +84,7 @@ class MyStreamListener(StreamListener):
     print('----------------ON STATUS--------------------')
     if config.follower == status.user.id_str: 
       print('OWN TWEET - MOST LIKELY REPLYING BACK')
-      print(status.created_at) # Date
+      print('Date - ' + str(status.created_at)) # Date
       print('Author - ' + status.user.screen_name)
       print('Tweet - ' + status.text)
       print('Tweet link - ' + status.id_str) 
@@ -93,11 +98,6 @@ class MyStreamListener(StreamListener):
   def reply_back(self, status):
     """
     STATISTICS THAT NEED TO BE LOGGED:
-    
-    DATE & TIME OF TWEET,
-    AUTHOR OF TWEET,
-    TWEET TEXT,
-    TWEET LINK,
     AUTHOR OF BOOK,
     TITLE OF BOOK,
     ISBN (RESULT),
@@ -109,7 +109,8 @@ class MyStreamListener(StreamListener):
     IF ERROR -- LOG THE ERROR!
 
     extra:
-    results of the 2nd and 3rd most relevant result
+    results of the 2nd and 3rd most relevant result !!! -- done, need to implement
+    talking to user reply data structure:
     """
 
     user_name = status.user.screen_name
@@ -121,39 +122,35 @@ class MyStreamListener(StreamListener):
     print('Tweet link -' + status.id_str)
     print('=================================')
     if not user_id in self.twitter_ids:
-      self.twitter_ids[user_id] = {}
+      self.twitter_ids[user_id] = {
+        'no_media': 0,
+        'not_photo': 0,
+        'no_text_with_pic': 0,
+        'no_results_with_pic': 0,
+        'encountered_error': 0,
+        'multiple_images': 0,
+      }
     if not hasattr(status, 'extended_entities'):
-      if 'no_media_reply' in self.twitter_ids[user_id]:
-        self.twitter_ids[user_id]['no_media_reply'] = self.twitter_ids[user_id]['no_media_reply'] + 1
-        if self.twitter_ids[user_id]['no_media_reply'] > 5:
-          return
-      else:
-        self.twitter_ids[user_id]['no_media_reply'] = 0
-      print (self.twitter_ids[user_id]['no_media_reply'])
-      self.api.update_status("@" + user_name + self.no_media_replies[self.twitter_ids[user_id]['no_media_reply']])
+      if not self.twitter_ids[user_id]['no_media'] > 5:
+        self.api.update_status("@" + user_name + self.no_media[self.twitter_ids[user_id]['no_media']])
+        self.twitter_ids[user_id]['no_media'] = self.twitter_ids[user_id]['no_media'] + 1
       return
     if status.extended_entities['media'][0]['type'] != 'photo':
-      if 'not_photo_reply' in self.twitter_ids[user_id]:
-        self.twitter_ids[user_id]['not_photo_reply'] = self.twitter_ids[user_id]['not_photo_reply'] + 1
-        if self.twitter_ids[user_id]['not_photo_reply'] > 5:
-          return
-      else:
-        self.twitter_ids[user_id]['not_photo_reply'] = 0
-      print (self.twitter_ids[user_id]['not_photo_reply'])
-      self.api.update_status("@" + user_name + self.not_photo_replies[self.twitter_ids[user_id]['not_photo_reply']])
+      if not self.twitter_ids[user_id]['not_photo'] > 5:
+        self.api.update_status("@" + user_name + self.not_photo[self.twitter_ids[user_id]['not_photo']])
+        self.twitter_ids[user_id]['not_photo'] = self.twitter_ids[user_id]['not_photo'] + 1
       return
     try:
+      if (len(status.extended_entities['media']) > 1):
+        self.api.update_status('@' + user_id + self.multiple_images[0] + str(self.twitter_ids[user_id]['multiple_images']))
+      
       fixed_txt = ''
 
       pict_txt = ocr.ocr_url(url = status.extended_entities['media'][0]['media_url']) # see ocr.py
 
       if isinstance(pict_txt, int):
-        if 'encountered_err' in self.twitter_ids[user_id]:
-          self.twitter_ids[user_id]['encountered_err'] = self.twitter_ids[user_id]['encountered_err'] + 1
-        else:
-          self.twitter_ids[user_id]['encountered_err'] = 0
-        print(self.twitter_ids[user_id]['encountered_err'])
-        self.api.update_status("@" + user_name + self.encountered_error_replies[pict_txt] + str(self.twitter_ids[user_id]['encountered_err']))
+        self.api.update_status("@" + user_name + self.encountered_error[pict_txt] + str(self.twitter_ids[user_id]['encountered_error']))
+        self.twitter_ids[user_id]['encountered_error'] = self.twitter_ids[user_id]['encountered_error'] + 1
         return
       print("**************UNFIXED TEXT***************")
       print(pict_txt)
@@ -168,21 +165,12 @@ class MyStreamListener(StreamListener):
       print(book_searches)
       
       if book_searches == 'NO TEXT':
-        if 'no_text_with_pic_reply' in self.twitter_ids[user_id]:
-          self.twitter_ids[user_id]['no_text_with_pic_reply'] = self.twitter_ids[user_id]['no_text_with_pic_reply'] + 1
-        else:
-          self.twitter_ids[user_id]['no_text_with_pic_reply'] = 0
-        print(self.twitter_ids[user_id]['no_text_with_pic_reply'])
-        self.api.update_status('@' + user_name + self.no_text_with_pic_replies[0] + str(self.twitter_ids[user_id]['no_text_with_pic_reply']))
+        self.api.update_status('@' + user_name + self.no_text_with_pic[0] + str(self.twitter_ids[user_id]['no_text_with_pic']))
+        self.twitter_ids[user_id]['no_text_with_pic'] = self.twitter_ids[user_id]['no_text_with_pic'] + 1
         return
       elif book_searches == 'NO RESULTS':
-        if 'no_results_with_pic_reply' in self.twitter_ids[user_id]:
-          self.twitter_ids[user_id]['no_results_with_pic_reply'] = self.twitter_ids[user_id]['no_results_with_pic_reply'] + 1
-          return
-        else:
-          self.twitter_ids[user_id]['no_results_with_pic_reply'] = 0
-        print(self.twitter_ids[user_id]['no_results_with_pic_reply'])
-        self.api.update_status('@' + user_name + self.no_results_with_pic_replies[0] + str(self.twitter_ids[user_id]['no_results_with_pic_reply']))
+        self.api.update_status('@' + user_name + self.no_results_with_pic[0] + str(self.twitter_ids[user_id]['no_results_with_pic']))
+        self.twitter_ids[user_id]['no_results_with_pic'] = self.twitter_ids[user_id]['no_results_with_pic'] + 1
         return
       # if (book_searches == 2 or book_searches == 3):
       #   if 'not_photo_replies' in self.twitter_ids[user_id]:
