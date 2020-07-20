@@ -7,8 +7,9 @@ import book_api
 import stringfix
 import requests
 import random
+import httplib2
 # import language_tool_python
-
+from url_checker import check_urls
 from tweepy.auth import OAuthHandler
 from tweepy.api import API
 from tweepy.streaming import Stream, StreamListener
@@ -64,16 +65,11 @@ class MyStreamListener(StreamListener):
     ' Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts - 2',
     ' Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts - 3',)
     self.no_text_with_pic = (' I did not find any text in the image you sent me - ', ' Huh, still no text found, that is odd')
-    self.no_results_with_pic = (' I did get any results in the text you sent me - ', ' I could not get any results for some reason, maybe send another pic')
+    self.no_results_with_pic = (' I did not get any results in the text you sent me - ', ' I could not get any results for some reason, maybe send another pic')
     self.encountered_error = (' The file type seems to not be correct - ', ' Sorry there must be congestion with the OCR - ', ' Huh, the photo does not be a ledgeable format - ')
     self.multiple_images = (' I only accept the first inital image, all the other images I ignore. - ')
     # self.tool = language_tool_python.LanguageTool('en-US')
     
-    # self.error_replies = ('Hey! Please send me photos with readable text please.',
-    # 'Please do not send me GIFS...',
-    # 'I cannot find any text with the picture you gave me. Maybe try another picture please.',
-    # 'I cannot find any results with the text you gave me. Maybe try a different quote please.' )
-
   def on_connect(self):
     """Called once connected to streaming server"""
     print('-----------------------------------------------')
@@ -142,7 +138,7 @@ class MyStreamListener(StreamListener):
       return
     try:
       if (len(status.extended_entities['media']) > 1):
-        self.api.update_status('@' + user_id + self.multiple_images[0] + str(self.twitter_ids[user_id]['multiple_images']))
+        self.api.update_status('@' + user_name + self.multiple_images[0] + str(self.twitter_ids[user_id]['multiple_images']))
       
       fixed_txt = ''
 
@@ -172,15 +168,21 @@ class MyStreamListener(StreamListener):
         self.api.update_status('@' + user_name + self.no_results_with_pic[0] + str(self.twitter_ids[user_id]['no_results_with_pic']))
         self.twitter_ids[user_id]['no_results_with_pic'] = self.twitter_ids[user_id]['no_results_with_pic'] + 1
         return
-      # if (book_searches == 2 or book_searches == 3):
-      #   if 'not_photo_replies' in self.twitter_ids[user_id]:
-      #     else:
-      #     self.twitter_ids[user_id]['not_photo_replies'] = 0
-      # return self.api.send_direct_message(user_id,(self.error_replies[book_searches]))
       
+      possible_urls = []
+      for isbn in book_searches:
+        possible_urls.append('https://www.amazon.ca/dp/'+ isbn)  
+      
+      viable_urls = check_urls(possible_urls) 
+            
       #Extra step -- Scan for related products using the ISBN given (multiple ASIN is prefered)      
-      
-      url_link =  'https://amazon.ca/dp/' + book_searches + '/?tag=' + config.amazon_id
+    
+      if not viable_urls: # Should be Amazon links
+        self.api.update_status('@' + user_name + self.no_results_with_pic[0] + str(self.twitter_ids[user_id]['no_results_with_pic']))
+        self.twitter_ids[user_id]['no_results_with_pic'] = self.twitter_ids[user_id]['no_results_with_pic'] + 1
+        return
+
+      url_link =  viable_urls[0] + '/?tag=' + config.amazon_id
       
       self.api.update_status('@'+ user_name + " Here you go, this is an Amazon link for you " + url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
       print('=================================')
