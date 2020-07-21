@@ -137,8 +137,11 @@ class MyStreamListener(StreamListener):
         self.twitter_ids[user_id]['not_photo'] = self.twitter_ids[user_id]['not_photo'] + 1
       return
     try:
-      if (len(status.extended_entities['media']) > 1):
-        self.api.update_status('@' + user_name + self.multiple_images[0] + str(self.twitter_ids[user_id]['multiple_images']))
+      # if (len(status.extended_entities['media']) > 1):
+        # print(self.multiple_images[0] + str(self.twitter_ids[user_id]['multiple_images']))
+        # self.api.update_status('@' + user_name + str(self.multiple_images[0] + str(self.twitter_ids[user_id]['multiple_images']))
+        # self.twitter_ids[user_id]['multiple_images'] = self.twitter_ids[user_id]['multiple_images'] + 1
+        # self.api.update_status('@' + user_name + self.multiple_images[0] + str(self.twitter_ids[user_id]['multiple_images']))
       
       fixed_txt = ''
 
@@ -148,9 +151,9 @@ class MyStreamListener(StreamListener):
         self.api.update_status("@" + user_name + self.encountered_error[pict_txt] + str(self.twitter_ids[user_id]['encountered_error']))
         self.twitter_ids[user_id]['encountered_error'] = self.twitter_ids[user_id]['encountered_error'] + 1
         return
-      print("**************UNFIXED TEXT***************")
-      print(pict_txt)
-      print("**************UNFIXED TEXT***************")
+      # print("**************UNFIXED TEXT***************")
+      # print(pict_txt)
+      # print("**************UNFIXED TEXT***************")
 
       fixed_txt = stringfix.fix_text(pict_txt) # see stringfix.py
       print("****************FIXED TEXT***************")
@@ -158,7 +161,7 @@ class MyStreamListener(StreamListener):
       print("****************FIXED TEXT***************")
   
       book_searches = book_api.find_quote(fixed_txt) # see book_api.py
-      print(book_searches)
+      # print(book_searches)
       
       if book_searches == 'NO TEXT':
         self.api.update_status('@' + user_name + self.no_text_with_pic[0] + str(self.twitter_ids[user_id]['no_text_with_pic']))
@@ -174,7 +177,7 @@ class MyStreamListener(StreamListener):
         possible_urls.append('https://www.amazon.ca/dp/'+ isbn)  
       
       viable_urls = check_urls(possible_urls) 
-            
+      print(str(viable_urls[0]))
       #Extra step -- Scan for related products using the ISBN given (multiple ASIN is prefered)      
     
       if not viable_urls: # Should be Amazon links
@@ -188,7 +191,7 @@ class MyStreamListener(StreamListener):
       print('=================================')
     except tweepy.TweepError as e:
       print("'************ Something Went Wrong ************'")
-      print(e.response)
+      print(e.response.text)
 
   def on_limit(self, track):
     """Called when stream connection times out"""

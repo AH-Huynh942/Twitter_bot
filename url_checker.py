@@ -3,11 +3,17 @@
 import concurrent.futures
 import httplib2
 
+'''
+Function: check_urls - is to be imported.
+-Used to reduced lag overall.
+-Checks multiple links for viability all at once without having to constantly wait for them consecutively. 
+'''
+
 def identify_header(url): # checks amazon header for status code - 200
   headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228 Safari/537.36'}
   h = httplib2.Http()
   r = h.request(url, headers = headers)
-  print (str(r[0]['status']) + '-- '+url)
+  # print (str(r[0]['status']) + '-- '+url)
   # return (r[0]['status'])
   return (r[0]['status'],url)
 

@@ -65,9 +65,9 @@ def ocr_url(url, overlay=False, api_key= ocr_key, language='eng'):
     # return r.content.decode() # <-- returns entire object as string
     # return r.json() # <-- returns json
     json = r.json()
-    print('********************OCR JSON***********************\n')
-    print(json)
-    print('********************OCR JSON***********************\n')
+    # print('********************OCR JSON***********************\n')
+    # print(json)
+    # print('********************OCR JSON***********************\n')
     if 'OCRExiteCode' in json:
         print (json['OCRExiteCode'])
         if 'ErrorMessage' in json:
