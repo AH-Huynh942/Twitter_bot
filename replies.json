@@ -1,0 +1,5 @@
+{
+  "simple_book_tweets": ["Hey, this is a simple tweet with a photo in it."],
+  "reply_to_bot_tweets": ["Why are you replying to a this tweet?"],
+  "reply_to_book_tweets": ["Ah, so there is a image in the tweet your replying to."]
+}

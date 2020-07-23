@@ -41,6 +41,7 @@ def main():
 
   '''
   Used to put daily streaming via multi-threading
+  TODO: Update twitter_ids to reset twitter replies daily
   '''
   # stream.filter(follow = [config.follower], is_async = True)
   # while True:
@@ -177,14 +178,14 @@ class MyStreamListener(StreamListener):
         possible_urls.append('https://www.amazon.ca/dp/'+ isbn)  
       
       viable_urls = check_urls(possible_urls) 
-      print(str(viable_urls[0]))
       #Extra step -- Scan for related products using the ISBN given (multiple ASIN is prefered)      
     
-      if not viable_urls: # Should be Amazon links
+      if not viable_urls: # LIST IS EMPTY - Should be Amazon links
         self.api.update_status('@' + user_name + self.no_results_with_pic[0] + str(self.twitter_ids[user_id]['no_results_with_pic']))
         self.twitter_ids[user_id]['no_results_with_pic'] = self.twitter_ids[user_id]['no_results_with_pic'] + 1
         return
 
+      print(str(viable_urls[0]))
       url_link =  viable_urls[0] + '/?tag=' + config.amazon_id
       
       self.api.update_status('@'+ user_name + " Here you go, this is an Amazon link for you " + url_link) # TODO MUST LIMIT THE CHARACTERS TO 280
