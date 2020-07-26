@@ -1,5 +1,73 @@
 {
-  "simple_book_tweets": ["Hey, this is a simple tweet with a photo in it."],
-  "reply_to_bot_tweets": ["Why are you replying to a this tweet?"],
-  "reply_to_book_tweets": ["Ah, so there is a image in the tweet your replying to."]
+  "no_media": [
+    " You did not tweet me an image. Next time, give me photos with readable text please.",
+    " Once again, you did not give me an image to interpret. Please send me a picture of the book your quoting.",
+    " I am getting tired of reminding you to tweet me images... Please give me a graphic, preferable with some writing.",
+    " I am tired of reminding you... This is an automatic message. I am going to stop messaging you after three more attempts. Attempt - 1",
+    " I am tired of reminding you... This is an automatic message. I am going to stop messaging you after three more attempts. Attempt - 2",
+    " I am tired of reminding you... This is an automatic message. I am going to stop messaging you after three more attempts. Attempt - 3 (not answering if the same error occurs)"],
+  "no_photo": [
+    " Please do not send me GIFS, images instead would be great!",
+    " I do not read other media, I only read photos please.",
+    " Huh, that does not look like an image to me... I reminded you right?",
+    " Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts. Attempt - 1",
+    " Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts. Attempt - 2",
+    " Okay, stop it. this is just going to be an automated message now... I am going to stop messaging you after three more attempts. Attempt - 3 (not answering if the same error occurs)"],
+  "no_media_in_reply": [
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 1",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 2",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 3",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 4",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 5",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 6"],  
+  "no_photo_in_reply": [
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 1",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 2",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 3",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 4",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 5",
+    " The tweet you wanted me to check does not have any quote images to check. Attempt - 6"],
+  "no_text_with_pic": [
+    " I did not find any text in the image you sent me.",
+    " Huh, still no text found, that is odd.",
+    " I don't know what else to say. Maybe check the quality of your images.",
+    " Please give a clear and concise image with text please - Attempt - 1 ",
+    " Please give a clear and concise image with text please - Attempt - 2",
+    " Please give a clear and concise image with text please - Attempt - 3 (not answering if the same error occurs)"],
+  "no_results_with_pic": [
+    " I did not get any results in the text you sent me.",
+    " I could not get any results for some reason, maybe send another picture.",
+    " The passage seems to have difficulty finding any relative books to it. Try another quote if need be.",
+    " No books found. Use another another more recognizable passage please. Attempt - 1",
+    " No books found. Use another another more recognizable passage please. Attempt - 2",
+    " No books found. Use another another more recognizable passage please. Attempt - 3 (not answering if the same error occurs)"],
+  "no_text_with_pic_in_reply": [
+    " The tweet's picture has no text. Please check again if you have the right tweet. Attempt - 1",
+    " The tweet's picture has no text. Please check again if you have the right tweet. Attempt - 2",
+    " The tweet's picture has no text. Please check again if you have the right tweet. Attempt - 3",
+    " The tweet's picture has no text. Please check again if you have the right tweet. Attempt - 4",
+    " The tweet's picture has no text. Please check again if you have the right tweet. Attempt - 5",
+    " The tweet's picture has no text. Please check again if you have the right tweet. Attempt - 6"],
+  "no_results_with_pic_in_reply": [
+    " Why, I can't seem to find any results with the tweet's picture text. That's really odd... Either its not a very popular book or the passage is not notable or something else... Attempt - 1",
+    " Why, I can't seem to find any results with the tweet's picture text. That's really odd... Either its not a very popular book or the passage is not notable or something else... Attempt - 2",
+    " Why, I can't seem to find any results with the tweet's picture text. That's really odd... Either its not a very popular book or the passage is not notable or something else... Attempt - 3",
+    " Why, I can't seem to find any results with the tweet's picture text. That's really odd... Either its not a very popular book or the passage is not notable or something else... Attempt - 4",
+    " Why, I can't seem to find any results with the tweet's picture text. That's really odd... Either its not a very popular book or the passage is not notable or something else... Attempt - 5",
+    " Why, I can't seem to find any results with the tweet's picture text. That's really odd... Either its not a very popular book or the passage is not notable or something else... Attempt - 6"],
+  "encountered_error": [
+    " The file type seems to not be correct.",
+    " Sorry there must be congestion with the OCR.",
+    " Huh, the photo does not seem to be a ledgeable format.",
+    " Please try again. Attempt - 1",
+    " Please try again. Attempt - 2",
+    " Please try again. Attempt - 3 (not answering if the same error occurs)"],
+  "multiple_images": [
+    " I only accept the first inital image, all the other images I ignore. - "],
+  "no_urls": [
+    " I can't seem to link to you any available links from Amazon.",
+    " There's nothing in store right now, try again later.",
+    " I can't seem to get you the link right.",
+    " Why don't you try another finding another book because I can't find anything in store right now.",
+    " Okay, that's enough. Your on your own now!"]
 }

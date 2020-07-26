@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger('twitter_stream')
+
 '''
 Function to remove nonsense and jargon to improve the text interpretation
 --Currently removes:
@@ -18,6 +21,9 @@ def fix_text(txt):
   for newline in short_txt: # fix 1
     if not (newline.isdecimal()):
       fixed_txt = fixed_txt + newline
+  logger.info('**********************************OCR RAW TEXT**********************************')
+  logger.info(fixed_txt)
+  logger.info('********************************************************************************')
   return(fixed_txt)
 
 def fix_text2(txt):
