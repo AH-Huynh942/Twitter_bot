@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger('twitter_stream')
 
-import ntlk
+# import ntlk
 
 '''
 Function to remove nonsense and jargon to improve the text interpretation
