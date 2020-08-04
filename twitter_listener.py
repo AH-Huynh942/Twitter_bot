@@ -54,7 +54,7 @@ class TwitterStreamListener(StreamListener):
           logger.info(f'Reply to ...{status.in_reply_to_screen_name} in {status.in_reply_to_status_id_str}')
         return
 
-      tweet_to_check = self.api.get_status(status.in_reply_to_status_id) if (tweet_type == 'TWEET THREAD') else status 
+      tweet_to_check = status if (tweet_type == 'TWEET THREAD') else status 
       if not (hasattr(tweet_to_check, 'extended_entities')):
         return self.give_error_reply(user_id, user_name, 'no_media_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_media', tweet_to_check.id)
       elif tweet_to_check.extended_entities['media'][0]['type'] != 'photo': 
@@ -65,7 +65,7 @@ class TwitterStreamListener(StreamListener):
       if not (pic_text): # MIGHT MAKE IT MORE SOPHISTICATED IN ERROR CHECKING
         return self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', tweet_to_check.id)
 
-      fixed_text = fix_text(pic_text) # See utilitie.string_fix.py - fix_text
+      fixed_text = fix_text2(pic_text) # See utilitie.string_fix.py - fix_text
       
       books = search_for_books(fixed_text) # See utilities.book_api.py - search_for_books
 

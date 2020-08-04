@@ -35,9 +35,9 @@ def ocr_file(filename, overlay=False, api_key=ocr_key, language='eng'):
 		)
 
 	r_json = r.json()
-	logger.debug('*************************RAW JSON of OCR_FILE FUNCTION**************************')
-	logger.debug(r_json)
-	logger.debug('********************************************************************************')
+	# logger.debug('*************************RAW JSON of OCR_FILE FUNCTION**************************')
+	# logger.debug(r_json)
+	# logger.debug('********************************************************************************')
 	
 	result = r_json['ParsedResults'][0]['ParsedText']
 
