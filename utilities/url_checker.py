@@ -26,7 +26,7 @@ def check_urls(urls): # returns viable URLs is an array
     with concurrent.futures.ThreadPoolExecutor() as executor:
         results = [executor.submit(identify_header, url) for url in urls]
 
-        for r in concurrent.futures.as_completed(results):
+    for r in concurrent.futures.as_completed(results):
         if int(r.result()[0]) == 200:
             # viable_urls.append(str(r.result()) + " -- STATUS CODE")
             viable_urls.append(r.result()[1])
