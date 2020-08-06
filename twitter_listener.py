@@ -84,10 +84,12 @@ class TwitterStreamListener(StreamListener):
             books = search_for_books(fixed_text) # See utilities.book_api.py - search_for_books
 
             # Step 6.5. Reply error with no results found
-            if (books == 'NO_TEXT'):
+            if (books == 'NO TEXT'):
+                logger.debug('ENCOUNTERED ERROR - STEP 6.5 - NO TEXT')
                 self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', status.id)
                 return 
-            elif (books == 'NO_RESULTS'):
+            elif (books == 'NO RESULTS'):
+                logger.debug('ENCOUNTERED ERROR - STEP 6.5 - NO RESULTS')
                 self.give_error_reply(user_id, user_name, 'no_results_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_results_with_pic', status.id)
                 return 
 
@@ -99,7 +101,9 @@ class TwitterStreamListener(StreamListener):
             
             # Step 7.5. Reply error when there is no amazon links found
             if not viable_urls:
-                return self.give_error_reply(user_id, user_name, 'no_urls', tweet_id)
+                logger.debug('ENCOUNTERED ERROR - STEP 7.5')
+                self.give_error_reply(user_id, user_name, 'no_urls', status.id)
+                return 
 
             # Step 8. Tweet back to person with amazon link of the related book
             url_link = viable_urls[0] + '/?tag=' + config.amazon_id

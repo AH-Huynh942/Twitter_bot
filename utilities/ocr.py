@@ -50,9 +50,9 @@ def ocr_file(filename, overlay=False, api_key=ocr_key, language='eng'):
     if (result == ''):
         return {'ErrorMessage': 'No text'}
 
-    logger.info('**********************************OCR RAW TEXT**********************************')
-    logger.info(result)
-    logger.info('********************************************************************************')
+    logger.debug('**********************************OCR RAW TEXT**********************************')
+    logger.debug(result)
+    logger.debug('********************************************************************************')
 
     return result
 
@@ -97,8 +97,8 @@ def find_text(url, overlay=False, api_key= ocr_key, language='eng'):
     if (result == ''):
         return {'ErrorMessage': 'No text'}
 
-    logger.info('**********************************OCR RAW TEXT**********************************')
-    logger.info(result)
-    logger.info('********************************************************************************')
+    logger.debug('**********************************OCR RAW TEXT**********************************')
+    logger.debug(result)
+    logger.debug('********************************************************************************')
 
     return result
