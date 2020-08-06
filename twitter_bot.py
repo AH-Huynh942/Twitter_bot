@@ -5,7 +5,7 @@ from init_twitter_bot import initiate_twitter_api
 from tweepy.streaming import Stream
 from twitter_listener import TwitterStreamListener
 
-# logging.disable(logging.DEBUG)
+logging.disable(logging.DEBUG)
 
 def main():
     api = initiate_twitter_api() # Create tweepy api - see init_twitter_bot.py

@@ -19,12 +19,12 @@ def initiate_authentication():
     token_secret = config.token_secret
     auth = OAuthHandler(api_key, api_secret)
     auth.set_access_token(access_token,token_secret)
-    logger.info(f'Authenitication key: {auth}')
+    # logger.info(f'Authenitication key: {auth}')
     return auth
 
 def initiate_twitter_api():
     """ Creates and setups the twitter api via with Tweepy (see Tweepy doc) """
     auth = initiate_authentication()
     api = API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
-    logger.info(f'Tweepy API: {api}')
+    # logger.info(f'Tweepy API: {api}')
     return api

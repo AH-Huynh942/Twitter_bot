@@ -24,9 +24,9 @@ def fix_text(text):
 
   # MUST BE A WAY TO CHECK IF A STRING CONTAINS A SENTENCE! MUST LOOK UP
 
-  logger.info('**********************************OCR RAW TEXT**********************************')
-  logger.info(fixed_txt)
-  logger.info('********************************************************************************')
+  logger.debug('**********************************OCR RAW TEXT**********************************')
+  logger.debug(fixed_txt)
+  logger.debug('********************************************************************************')
   return(fixed_text)
 
 def find_capital_letter(text):

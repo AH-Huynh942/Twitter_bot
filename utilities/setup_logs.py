@@ -19,5 +19,6 @@ def setup_loggers():
     twitter_stream_handler.setFormatter(twitter_stream_formatter)
 
     main_logger.addHandler(main_file_handler)
+    twitter_stream_logger.addHandler(main_file_handler)
     twitter_stream_logger.addHandler(twitter_stream_handler)
   
