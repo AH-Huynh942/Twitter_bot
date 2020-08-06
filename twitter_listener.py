@@ -60,18 +60,22 @@ class TwitterStreamListener(StreamListener):
 
             # Step 3. Checks for presence of viable image (no gifs and only the first image is used)
             if not (hasattr(status, 'extended_entities')):
-                return self.give_error_reply(user_id, user_name, 'no_media_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_media', status.id)
+                self.give_error_reply(user_id, user_name, 'no_media_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_media', status.id)
+                return 
             elif status.extended_entities['media'][0]['type'] != 'photo': 
-                return self.give_error_reply(user_id, user_name, 'no_photo_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_photo', status.id)
+                self.give_error_reply(user_id, user_name, 'no_photo_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_photo', status.id)
+                return 
 
             # Step 4. Finds text within image 
             pic_text = find_text(url = status.extended_entities['media'][0]['media_url']) # see utilities.ocr.py - find_text
             # Step 4.5. Reply error with no text in picture
             if not(isinstance(pic_text, str)):
                 if (pic_text['ErrorMessage'] == 'No text'):
-                    return self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', status.id)
+                    self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', status.id)
+                    return 
                 else:
-                    return self.give_error_reply(user_id, user_name, 'encountered_error', status.id)
+                    self.give_error_reply(user_id, user_name, 'encountered_error', status.id)
+                    return 
 
             # Step 5. Cleans/Clearifies the text that was interpreted giving a better result in book search
             fixed_text = fix_text2(pic_text) # See utilitie.string_fix.py - fix_text
@@ -81,9 +85,11 @@ class TwitterStreamListener(StreamListener):
 
             # Step 6.5. Reply error with no results found
             if (books == 'NO_TEXT'):
-                return self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', status.id)
+                self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', status.id)
+                return 
             elif (books == 'NO_RESULTS'):
-                return self.give_error_reply(user_id, user_name, 'no_results_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_results_with_pic', status.id)
+                self.give_error_reply(user_id, user_name, 'no_results_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_results_with_pic', status.id)
+                return 
 
             # Step 7. Searches for viable amazon links to give out
             possible_urls = []
