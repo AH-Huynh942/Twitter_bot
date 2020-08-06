@@ -11,6 +11,7 @@ from utilities.url_checker import check_urls
 from tweepy.streaming import StreamListener
 
 # TODO: Extra step (7.5) -- Scan for related products using the ISBN given (multiple ASIN is prefered)
+# TODO: Return and self.error_reply function in one line
 
 class TwitterStreamListener(StreamListener):
     """ The twitter bots main functionalities and responses """
@@ -58,16 +59,17 @@ class TwitterStreamListener(StreamListener):
                     logger.info(f'Reply to ...{status.in_reply_to_screen_name} in {status.in_reply_to_status_id_str}')
                 return
 
+            tweet_to_check = self.api.get_status(status.in_reply_to_status_id) if (tweet_type == 'TWEET THREAD') else status
             # Step 3. Checks for presence of viable image (no gifs and only the first image is used)
-            if not (hasattr(status, 'extended_entities')):
+            if not (hasattr(tweet_to_check, 'extended_entities')):
                 self.give_error_reply(user_id, user_name, 'no_media_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_media', status.id)
                 return 
-            elif status.extended_entities['media'][0]['type'] != 'photo': 
+            elif tweet_to_check.extended_entities['media'][0]['type'] != 'photo': 
                 self.give_error_reply(user_id, user_name, 'no_photo_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_photo', status.id)
                 return 
 
             # Step 4. Finds text within image 
-            pic_text = find_text(url = status.extended_entities['media'][0]['media_url']) # see utilities.ocr.py - find_text
+            pic_text = find_text(url = tweet_to_check.extended_entities['media'][0]['media_url']) # see utilities.ocr.py - find_text
             # Step 4.5. Reply error with no text in picture
             if not(isinstance(pic_text, str)):
                 if (pic_text['ErrorMessage'] == 'No text'):
