@@ -67,8 +67,11 @@ class TwitterStreamListener(StreamListener):
             # Step 4. Finds text within image 
             pic_text = find_text(url = status.extended_entities['media'][0]['media_url']) # see utilities.ocr.py - find_text
             # Step 4.5. Reply error with no text in picture
-            if not (pic_text): # MIGHT MAKE IT MORE SOPHISTICATED IN ERROR CHECKING
-                return self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', status.id)
+            if not(isinstance(pic_text, str)):
+                if (pic_text['ErrorMessage'] == 'No text'):
+                    return self.give_error_reply(user_id, user_name, 'no_text_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_text_with_pic', status.id)
+                else:
+                    return self.give_error_reply(user_id, user_name, 'encountered_error', status.id)
 
             # Step 5. Cleans/Clearifies the text that was interpreted giving a better result in book search
             fixed_text = fix_text2(pic_text) # See utilitie.string_fix.py - fix_text

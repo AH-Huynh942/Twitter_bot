@@ -40,22 +40,21 @@ def ocr_file(filename, overlay=False, api_key=ocr_key, language='eng'):
     logger.debug('********************************************************************************')
 
     # Check for timeout when waiting for results
-
-    if (len(r_json['ParseResults'] <= 0):
-        if (hasattr(r_json, 'ErrorMessage'):
+    if (len(r_json['ParsedResults']) <= 0):
+        if 'ErrorMessage' in r_json:
             return {'ErrorMessage': r_json['ErrorMessage']}
         return {'ErrorMessage': 'Unknown Error'}
 
     result = r_json['ParsedResults'][0]['ParsedText']
 
     if (result == ''):
-        return False
+        return {'ErrorMessage': 'No text'}
 
     logger.info('**********************************OCR RAW TEXT**********************************')
     logger.info(result)
     logger.info('********************************************************************************')
 
-return result
+    return result
 
 # REAL FUNCTION
 def find_text(url, overlay=False, api_key= ocr_key, language='eng'):
@@ -88,12 +87,15 @@ def find_text(url, overlay=False, api_key= ocr_key, language='eng'):
     logger.debug('********************************************************************************')
 
     # Check for timeout when waiting for results
-
+    if (len(r_json['ParsedResults']) <= 0):
+        if 'ErrorMessage' in r_json:
+            return {'ErrorMessage': r_json['ErrorMessage']}
+        return {'ErrorMessage': 'Unknown Error'}
 
     result = r_json['ParsedResults'][0]['ParsedText']
 
     if (result == ''):
-        return False
+        return {'ErrorMessage': 'No text'}
 
     logger.info('**********************************OCR RAW TEXT**********************************')
     logger.info(result)
