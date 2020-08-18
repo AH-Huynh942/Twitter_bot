@@ -1,11 +1,32 @@
 import logging
 from utilities.setup_logs import setup_loggers
 
-from init_twitter_bot import initiate_twitter_api
+import config
+
+from tweepy.api import API
+from tweepy.auth import OAuthHandler
 from tweepy.streaming import Stream
 from twitter_listener import TwitterStreamListener
 
-logging.disable(logging.DEBUG)
+# logging.disable(logging.DEBUG)
+
+def initiate_authentication():
+    """ Creates authentication with credential keys from config.py file """
+    api_key = config.api_key
+    api_secret = config.api_secret
+    access_token = config.access_token
+    token_secret = config.token_secret
+    auth = OAuthHandler(api_key, api_secret)
+    auth.set_access_token(access_token,token_secret)
+    # logger.info(f'Authenitication key: {auth}')
+    return auth
+
+def initiate_twitter_api():
+    """ Creates and setups the twitter api via with Tweepy (see Tweepy doc) """
+    auth = initiate_authentication()
+    api = API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
+    # logger.info(f'Tweepy API: {api}')
+    return api
 
 def main():
     api = initiate_twitter_api() # Create tweepy api - see init_twitter_bot.py

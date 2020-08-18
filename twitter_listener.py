@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger('twitter_stream')
 
 import json
+import time
 import tweepy
 import config
 from utilities.ocr import find_text  
@@ -95,21 +96,28 @@ class TwitterStreamListener(StreamListener):
                 self.give_error_reply(user_id, user_name, 'no_results_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_results_with_pic', status.id)
                 return 
 
+            # Step 7 Version 2: Get title of most relevant book and author
+            book_title = books[0]['title'] # title of first result in book searchs
+            author_title = books[1]['authors']# author of first result in book searchs
+
             # Step 7. Searches for viable amazon links to give out
-            possible_urls = []
-            for isbn in books:
-                possible_urls.append('https://www.amazon.ca/dp/'+ isbn)  
-            viable_urls = check_urls(possible_urls) # see utilities.url_checker.py - check_urls
+            # possible_urls = []
+            # for isbn in books:
+            #     possible_urls.append('https://www.amazon.ca/dp/'+ isbn)  
+            # viable_urls = check_urls(possible_urls) # see utilities.url_checker.py - check_urls
             
             # Step 7.5. Reply error when there is no amazon links found
-            if not viable_urls:
-                logger.info('ENCOUNTERED ERROR - STEP 7.5')
-                self.give_error_reply(user_id, user_name, 'no_urls', status.id)
-                return 
+            # if not viable_urls:
+            #     logger.info('ENCOUNTERED ERROR - STEP 7.5')
+            #     self.give_error_reply(user_id, user_name, 'no_urls', status.id)
+            #     return 
 
             # Step 8. Tweet back to person with amazon link of the related book
-            url_link = viable_urls[0] + '/?tag=' + config.amazon_id
-            self.api.update_status(f'@{user_name} Here you go, this is an Amazon link for you {url_link}', status.id)
+            # url_link = viable_urls[0] + '/?tag=' + config.amazon_id
+            # self.api.update_status(f'@{user_name} Here you go, this is an Amazon link for you {url_link}', status.id) -- must add back later
+
+            # Step 8 Version 2: Tweet back to person with the title and author of the related book
+            self.api.update_status(f'@{user_name} Here you go, the title of the book is "{book_title}" and the the Author is {author_title}', status.id)
         except tweepy.TweepError as e:
             # see twitter documentation for all twitter status codes - https://developer.twitter.com/en/docs/basics/response-codes
             logger.error('Error handling!')
