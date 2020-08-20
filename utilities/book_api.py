@@ -3,7 +3,8 @@ logger = logging.getLogger('twitter_stream')
 
 import requests
 # import goodreads_api_client as GR
-from config import google_key, goodreads_key, goodreads_secret
+# from config import google_key, goodreads_key, goodreads_secret
+from config import google_key
 
 # TESTING FUNCTION - for files
 def find_book(q, maxResults = 6, projection = 'full',):
@@ -81,22 +82,22 @@ def search_for_books(q, maxResults = 6, projection = 'full',  ):
         books.append(book_id)
     return books
 
-def find_purchasable_books(text):
-    '''
-    GoodReads API finding viable Amazon links (that works)
-    '''
-    client = GR.Client(developer_key = goodreads_key, developer_secret = goodreads_secret)
-    book = client.Book.title('Harry Potter')
-    # book = client.search_book('Chronicles of Prydain', 'title',1)
-    keys_wanted = ['id', 'title', 'isbn']
-    reduced_book = {k:v for k, v in book.items() if k in keys_wanted}
-    print(reduced_book)
-    print(book)
+# def find_purchasable_books(text):
+#     '''
+#     GoodReads API finding viable Amazon links (that works)
+#     '''
+#     client = GR.Client(developer_key = goodreads_key, developer_secret = goodreads_secret)
+#     book = client.Book.title('Harry Potter')
+#     # book = client.search_book('Chronicles of Prydain', 'title',1)
+#     keys_wanted = ['id', 'title', 'isbn']
+#     reduced_book = {k:v for k, v in book.items() if k in keys_wanted}
+#     print(reduced_book)
+#     print(book)
 
-    # searchTitle = 'title'
-    # url = f'https://www.goodreads.com/search.xml?key={goodreads_key}&q={q}&page={1}&search={searchTitle}'
-    # response = requests.get(url)
-    # tree = ElementTree.fromstring(response.content)
-    # print(tree.find('search'))
-    # except:
-    #   pass
+#     searchTitle = 'title'
+#     url = f'https://www.goodreads.com/search.xml?key={goodreads_key}&q={q}&page={1}&search={searchTitle}'
+#     response = requests.get(url)
+#     tree = ElementTree.fromstring(response.content)
+#     print(tree.find('search'))
+#     except:
+#       pass

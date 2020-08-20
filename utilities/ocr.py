@@ -97,7 +97,7 @@ def find_text(url, overlay=False, api_key= ocr_key, language='eng'):
                 return {'ErrorMessage': r_json['ErrorMessage']}
             return {'ErrorMessage': 'Unknown Error'}
     except TypeError:
-        return return {'ErrorMessage': 'Unknown Error'}
+        return {'ErrorMessage': 'Unknown Error'}
 
     result = r_json['ParsedResults'][0]['ParsedText']
 
