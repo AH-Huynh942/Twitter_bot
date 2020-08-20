@@ -3,7 +3,7 @@ logger = logging.getLogger('twitter_stream')
 
 import requests
 import goodreads_api_client as GR
-from config import google_key, goodreads_key
+from config import google_key, goodreads_key, goodreads_secret
 
 # TESTING FUNCTION - for files
 def find_book(q, maxResults = 6, projection = 'full',):
@@ -50,7 +50,7 @@ def search_for_books(q, maxResults = 6, projection = 'full',  ):
     r = requests.get(url)
     results = r.json()
 
-    logger.info('*****************************Book Info Given************************************')
+    logger.info('Book Info Given--------------------------------------------------')
     if 'totalItems' not in results: # print('There is no totalItems')
         return 'NO TEXT'
     if (results['totalItems'] <= 0): # print('TotalItems is less than 0')
@@ -64,13 +64,13 @@ def search_for_books(q, maxResults = 6, projection = 'full',  ):
         if 'title' in info:
             logger.info(f'Title - %s', info['title'])
             book_id['title'] = info['title']
-        if 'subtitle' in info:	logger.debug(f'Subtitle - %s', info['subtitle'])
+        # if 'subtitle' in info:	logger.debug(f'Subtitle - %s', info['subtitle'])
         if 'authors' in info:
             logger.info(f'Author(s) - %s', info['authors']) 
             book_id['authors'] = info['authors']
-        if 'publisher' in info:	logger.debug(f'Publisher - %s', info['publisher'])
-        if 'publishDate' in info:	logger.debug(f'Published date - %s', info['publishDate'])
-        if 'description' in info:	logger.debug(f'Desc - %s', info['description'])
+        # if 'publisher' in info:	logger.debug(f'Publisher - %s', info['publisher'])
+        # if 'publishDate' in info:	logger.debug(f'Published date - %s', info['publishDate'])
+        # if 'description' in info:	logger.debug(f'Desc - %s', info['description'])
         if 'industryIdentifiers' in info:	
             logger.info(f'ISBN - %s', info['industryIdentifiers'])
             for isbn in info['industryIdentifiers']:
@@ -79,23 +79,24 @@ def search_for_books(q, maxResults = 6, projection = 'full',  ):
                 if isbn['type'] == 'ISBN_10':
                     book_id['isbns']['ISBN_10'] = isbn['identifier']
         books.append(book_id)
-    logger.info('********************************************************************************')
     return books
 
-    def find_purchasable_books(q):
-        '''
-        GoodReads API finding viable Amazon links (that works)
-        '''
-        client = gr.Client(developer_key = goodreads_key)
-        book = client.search_book('Prydain','title')
-        keys_wanted = ['id', 'title', 'isbn']
-        reduced_book = {k:v for k, v in book.items() if k in keys_wanted}
-        print(reduced_book)
+def find_purchasable_books(text):
+    '''
+    GoodReads API finding viable Amazon links (that works)
+    '''
+    client = GR.Client(developer_key = goodreads_key, developer_secret = goodreads_secret)
+    book = client.Book.title('Harry Potter')
+    # book = client.search_book('Chronicles of Prydain', 'title',1)
+    keys_wanted = ['id', 'title', 'isbn']
+    reduced_book = {k:v for k, v in book.items() if k in keys_wanted}
+    print(reduced_book)
+    print(book)
 
-        # searchTitle = 'title'
-        # url = f'https://www.goodreads.com/search.xml?key={goodreads_key}&q={q}&page={1}&search={searchTitle}'
-        # response = requests.get(url)
-        # tree = ElementTree.fromstring(response.content)
-        # print(tree.find('search'))
-        # except:
-        #   pass
+    # searchTitle = 'title'
+    # url = f'https://www.goodreads.com/search.xml?key={goodreads_key}&q={q}&page={1}&search={searchTitle}'
+    # response = requests.get(url)
+    # tree = ElementTree.fromstring(response.content)
+    # print(tree.find('search'))
+    # except:
+    #   pass

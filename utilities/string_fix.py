@@ -23,9 +23,8 @@ def fix_text(txt):
   for newline in short_txt: # fix 1
     if not (newline.isdecimal()):
       fixed_txt = fixed_txt + newline
-  logger.debug('**********************************OCR RAW TEXT**********************************')
+  logger.debug('OCR RAW TEXT--------------------------------------------------')
   logger.debug(fixed_txt)
-  logger.debug('********************************************************************************')
   return(fixed_txt)
 
 def fix_text2(txt):

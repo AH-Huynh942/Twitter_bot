@@ -13,6 +13,7 @@ from tweepy.streaming import StreamListener
 
 # TODO: Extra step (7.5) -- Scan for related products using the ISBN given (multiple ASIN is prefered)
 # TODO: Return and self.error_reply function in one line
+# TODO: Prevent more than 5 concurrent connections to OCR api
 
 class TwitterStreamListener(StreamListener):
     """ The twitter bots main functionalities and responses """
@@ -98,7 +99,7 @@ class TwitterStreamListener(StreamListener):
 
             # Step 7 Version 2: Get title of most relevant book and author
             book_title = books[0]['title'] # title of first result in book searchs
-            author_title = books[1]['authors']# author of first result in book searchs
+            author_title = books[0]['authors']# author of first result in book searchs
 
             # Step 7. Searches for viable amazon links to give out
             # possible_urls = []

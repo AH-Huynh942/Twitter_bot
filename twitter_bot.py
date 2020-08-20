@@ -8,7 +8,7 @@ from tweepy.auth import OAuthHandler
 from tweepy.streaming import Stream
 from twitter_listener import TwitterStreamListener
 
-# logging.disable(logging.DEBUG)
+logging.disable(logging.DEBUG)
 
 def initiate_authentication():
     """ Creates authentication with credential keys from config.py file """

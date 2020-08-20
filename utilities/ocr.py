@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger('twitter_stream')
 
 import requests
-
+import time
 from config import ocr_key
 
 # TESTING FUNCTION
@@ -37,8 +37,10 @@ def ocr_file(filename, overlay=False, api_key=ocr_key, language='eng'):
     r_json = r.json()
     logger.debug('*************************RAW JSON of OCR_FILE FUNCTION**************************')
     logger.debug(r_json)
-    logger.debug('********************************************************************************')
-
+    if (isinstance(r_json,str)):
+        time.sleep(5)
+        logger.debug('SLEEEEEEEPING.....')
+        ocr_file(filename, overlay=False, api_key=ocr_key, language='eng')
     # Check for timeout when waiting for results
     if (len(r_json['ParsedResults']) <= 0):
         if 'ErrorMessage' in r_json:
@@ -50,9 +52,8 @@ def ocr_file(filename, overlay=False, api_key=ocr_key, language='eng'):
     if (result == ''):
         return {'ErrorMessage': 'No text'}
 
-    logger.debug('**********************************OCR RAW TEXT**********************************')
+    logger.debug('OCR RAW TEXT----------------------------------------')
     logger.debug(result)
-    logger.debug('********************************************************************************')
 
     return result
 
@@ -82,23 +83,28 @@ def find_text(url, overlay=False, api_key= ocr_key, language='eng'):
         data=payload,)
 
     r_json = r.json()
-    logger.debug('*************************RAW JSON of OCR_FILE FUNCTION**************************')
+    logger.debug('RAW JSON of OCR_FILE FUNCTION--------------------------------------------------')
     logger.debug(r_json)
-    logger.debug('********************************************************************************')
-
+    if (isinstance(r_json,str)):
+        time.sleep(5)
+        logger.debug('SLEEEEEEEPING.....')
+        find_text(url, overlay=False, api_key= ocr_key, language='eng')
     # Check for timeout when waiting for results
-    if (len(r_json['ParsedResults']) <= 0):
-        if 'ErrorMessage' in r_json:
-            return {'ErrorMessage': r_json['ErrorMessage']}
-        return {'ErrorMessage': 'Unknown Error'}
+    try:
+
+        if (len(r_json['ParsedResults']) <= 0):
+            if 'ErrorMessage' in r_json:
+                return {'ErrorMessage': r_json['ErrorMessage']}
+            return {'ErrorMessage': 'Unknown Error'}
+    except TypeError:
+        return return {'ErrorMessage': 'Unknown Error'}
 
     result = r_json['ParsedResults'][0]['ParsedText']
 
     if (result == ''):
         return {'ErrorMessage': 'No text'}
 
-    logger.debug('**********************************OCR RAW TEXT**********************************')
+    logger.debug('OCR RAW TEXT--------------------------------------------------')
     logger.debug(result)
-    logger.debug('********************************************************************************')
 
     return result
