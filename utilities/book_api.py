@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger('twitter_stream')
 
 import requests
-import goodreads_api_client as GR
+# import goodreads_api_client as GR
 from config import google_key, goodreads_key, goodreads_secret
 
 # TESTING FUNCTION - for files

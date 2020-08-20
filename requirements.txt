@@ -33,4 +33,4 @@ wcwidth==0.1.9
 pyspellchecker==0.5.4
 nltk==3.5
 httplib2==0.18.1
-goodreads-api-client==0.1.0.dev4
+goodreads_api_client==0.1.0.dev4
