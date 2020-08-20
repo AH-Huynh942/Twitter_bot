@@ -126,7 +126,7 @@ class TwitterStreamListener(StreamListener):
 
             # Step 8 Version 2: Tweet back to person with the title and author of the related book
             # self.api.update_status(f'@{user_name} Here you go, the title of the book is "{book_title}" and the the Author is {author_title}', status.id)
-            self.api.update_status(f'@{user_name} Here you go, the title of the book is “{book_title}” by Author{author_title}', status.id)
+            self.api.update_status(f'@{user_name} Here you go, the title of the book is “{book_title}” by{author_title}', status.id)
         except tweepy.TweepError as e:
             # see twitter documentation for all twitter status codes - https://developer.twitter.com/en/docs/basics/response-codes
             logger.error('Error handling!')
