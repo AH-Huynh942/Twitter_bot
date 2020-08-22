@@ -12,8 +12,6 @@ from utilities.url_checker import check_urls
 from tweepy.streaming import StreamListener
 
 # TODO: Extra step (7.5) -- Scan for related products using the ISBN given (multiple ASIN is prefered)
-# TODO: Return and self.error_reply function in one line
-# TODO: Prevent more than 5 concurrent connections to OCR api
 
 class TwitterStreamListener(StreamListener):
     """ The twitter bots main functionalities and responses """
@@ -140,14 +138,14 @@ class TwitterStreamListener(StreamListener):
     def identify_tweet(self,status):
         '''
         Distinguised what type tweets:
-        -The Bot's own tweet
+        -(OBSOLETE) The Bot's own tweet
         -Regular tweets that just mention twitter_bot
         -A tweet comment/reply to ANOTHER tweet(the tweet commented upon CONTAINS the image that needs to be looked at)
-        -Commenting/Replying on the bot's own tweet -- check in_reply_to_screen == my.screen_name
+        -(OBSOLETE) Commenting/Replying on the bot's own tweet -- check in_reply_to_screen == my.screen_name
         '''
-        if (status.author.id == self.my.id):
-            return 'MY OWN TWEET'
-        elif (status.in_reply_to_status_id is None):
+        # if (status.author.id == self.my.id):
+        #     return 'MY OWN TWEET'
+        if (status.in_reply_to_status_id is None):
             return 'REGULAR TWEET'
         # elif (status.in_reply_to_user_id == self.my.id):
         #     return 'TWEET REPLY TO ME'
