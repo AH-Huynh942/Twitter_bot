@@ -22,6 +22,7 @@ class TwitterStreamListener(StreamListener):
         self.api = api # Twitter API
         self.my = my # Called with api.me()
         self.twitter_ids = {}
+        self.search_check = f'@{my.screen_name} search'
         with open('replies.json') as replies:
             self.error_replies = json.load(replies)
             # CURRENT ERROR MESSAGES: no_media, no_photo, no_text_with_pic, no_results_with_pic, 
@@ -42,6 +43,10 @@ class TwitterStreamListener(StreamListener):
             tweet = status.text
             user_id = status.author.id_str
 
+            # step 0. Look for the magic word sequence!
+            if self.search_check not in tweet:
+                logger.info('Bot was mentioned, but the trigger word was not used')
+                return
             if user_id not in self.twitter_ids:
                 self.twitter_ids[user_id] = {}
                 for key in self.error_replies.keys():
@@ -56,10 +61,10 @@ class TwitterStreamListener(StreamListener):
             logger.debug(f"tweet_type = {tweet_type}")      
             
             # Step 2. Checks for tweet type being a direct tweet/my own toward bot - give no reply (otherwise cause endless loop)
-            if (tweet_type == 'MY OWN TWEET') or (tweet_type == 'TWEET REPLY TO ME'):
-                if (status.in_reply_to_status_id is not None):
-                    logger.info(f'Reply to ...{status.in_reply_to_screen_name} in {status.in_reply_to_status_id_str}')
-                return
+            # if (tweet_type == 'MY OWN TWEET') or (tweet_type == 'TWEET REPLY TO ME'):
+            #     if (status.in_reply_to_status_id is not None):
+            #         logger.info(f'Reply to ...{status.in_reply_to_screen_name} in {status.in_reply_to_status_id_str}')
+            #     return
 
             tweet_to_check = self.api.get_status(status.in_reply_to_status_id) if (tweet_type == 'TWEET THREAD') else status
             # Step 3. Checks for presence of viable image (no gifs and only the first image is used)
@@ -97,9 +102,9 @@ class TwitterStreamListener(StreamListener):
                 self.give_error_reply(user_id, user_name, 'no_results_with_pic_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_results_with_pic', status.id)
                 return 
 
-            # Step 7 Version 2: Get title of most relevant book and author
+            # Step 7 Version 2: Get title of most relevant book and author(s)
             book_title = books[0]['title'] # title of first result in book searchs
-            author_title = '' # author of first result in book searchs
+            author_title = '' # author(s) of first result in book searchs
             for i, author in enumerate(books[0]['authors']):
                 if (i == len(books[0]['authors'])-1 and len(books[0]['authors']) == 1):
                     author_title = ' ' + author
@@ -141,21 +146,12 @@ class TwitterStreamListener(StreamListener):
         -Commenting/Replying on the bot's own tweet -- check in_reply_to_screen == my.screen_name
         '''
         if (status.author.id == self.my.id):
-            # logger.debug('My own tweet')
-            # logger.debug('Doing nothing')
             return 'MY OWN TWEET'
         elif (status.in_reply_to_status_id is None):
-            # logger.debug('Simple mentioned tweet!') 
-            # logger.debug('check tweet for photo')
             return 'REGULAR TWEET'
-        elif (status.in_reply_to_user_id == self.my.id):
-            # logger.debug('comment on the bots own tweet')
-            # logger.debug('Why!? - Do not do anything')
-            return 'TWEET REPLY TO ME'
+        # elif (status.in_reply_to_user_id == self.my.id):
+        #     return 'TWEET REPLY TO ME'
         else:
-            # logger.debug('Check the replied status for photo')
-            # logger.debug('find tweet via status_id')
-            # logger.debug('check that tweet for image')
             return 'TWEET THREAD'
 
     def give_error_reply(self, user_id, user_name, error_type, tweet_id):
