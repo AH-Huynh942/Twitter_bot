@@ -21,6 +21,7 @@ class TwitterStreamListener(StreamListener):
         self.my = my # Called with api.me()
         self.twitter_ids = {}
         self.search_check = f'@{my.screen_name} search'
+        self.search_check2 = f'@{my.screen_name} Search'
         with open('replies.json') as replies:
             self.error_replies = json.load(replies)
             # CURRENT ERROR MESSAGES: no_media, no_photo, no_text_with_pic, no_results_with_pic, 
@@ -42,7 +43,9 @@ class TwitterStreamListener(StreamListener):
             user_id = status.author.id_str
 
             # step 0. Look for the magic word sequence!
-            if self.search_check not in tweet:
+            if self.search_check in tweet or self.search_check2 in tweet:
+                pass
+            else:
                 logger.info('Bot was mentioned, but the trigger word was not used')
                 return
             if user_id not in self.twitter_ids:
