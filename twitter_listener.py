@@ -60,24 +60,29 @@ class TwitterStreamListener(StreamListener):
             # Step 1. Check for tweet type(s) - (tweet reply to me, my own tweet, tweet thread, regular tweet)
             tweet_type = self.identify_tweet(status) # function in class
             logger.debug(f"tweet_type = {tweet_type}")      
-            
+
             # Step 2. Checks for tweet type being a direct tweet/my own toward bot - give no reply (otherwise cause endless loop)
             # if (tweet_type == 'MY OWN TWEET') or (tweet_type == 'TWEET REPLY TO ME'):
             #     if (status.in_reply_to_status_id is not None):
             #         logger.info(f'Reply to ...{status.in_reply_to_screen_name} in {status.in_reply_to_status_id_str}')
             #     return
 
-            tweet_to_check = self.api.get_status(status.in_reply_to_status_id) if (tweet_type == 'TWEET THREAD') else status
+            tweet_to_check = self.api.get_status(status.in_reply_to_status_id, tweet_mode = "extended") if (tweet_type == 'TWEET THREAD') else status
             # Step 3. Checks for presence of viable image (no gifs and only the first image is used)
-            if not (hasattr(tweet_to_check, 'extended_entities')):
+            extended_media = 'NO_MEDIA'
+            if hasattr(tweet_to_check, 'extended_entities'):
+                extended_media = tweet_to_check.extended_entities
+            if hasattr(tweet_to_check, 'extended_tweet'):
+                extended_media = tweet_to_check.extended_tweet['entities']
+            if extended_media == 'NO_MEDIA':
                 self.give_error_reply(user_id, user_name, 'no_media_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_media', status.id)
                 return 
-            elif tweet_to_check.extended_entities['media'][0]['type'] != 'photo': 
+            elif extended_media['media'][0]['type'] != 'photo':
                 self.give_error_reply(user_id, user_name, 'no_photo_in_reply' if (tweet_type == 'TWEET THREAD') else 'no_photo', status.id)
                 return 
 
             # Step 4. Finds text within image 
-            pic_text = find_text(url = tweet_to_check.extended_entities['media'][0]['media_url']) # see utilities.ocr.py - find_text
+            pic_text = find_text(url = extended_media['media'][0]['media_url']) # see utilities.ocr.py - find_text
             # Step 4.5. Reply error with no text in picture
             if not(isinstance(pic_text, str)):
                 if (pic_text['ErrorMessage'] == 'No text'):
@@ -160,6 +165,7 @@ class TwitterStreamListener(StreamListener):
             message = '@{}{}'.format(user_name, self.error_replies[error_type][self.twitter_ids[user_id][error_type]])
             self.api.update_status(message, tweet_id)
             self.twitter_ids[user_id][error_type] += 1 
+            logger.info("REPLY ERROR TYPE: {}, MESSAGE: {}".format(error_type, message))
 
     def on_limit(self, track):
         """Called when stream connection times out"""
