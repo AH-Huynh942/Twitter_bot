@@ -46,7 +46,8 @@ def search_for_books(q, maxResults = 6, projection = 'full',  ):
     Searches for books using the google books REST api with search query "q" 
     '''
     printType = 'books'
-    url = f'https://www.googleapis.com/books/v1/volumes?q={q}&printType={printType}&maxResults={maxResults}&projection={projection}'
+    query = '"{}"'.format(q)
+    url = f'https://www.googleapis.com/books/v1/volumes?q={query}&printType={printType}&maxResults={maxResults}&projection={projection}'
 
     r = requests.get(url)
     results = r.json()
