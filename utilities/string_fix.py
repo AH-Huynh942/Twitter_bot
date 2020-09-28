@@ -39,7 +39,12 @@ def fix_text2(txt):
   for newline in short_txt: # fix 1
     if not (newline.isdecimal()):
       fixed_txt = fixed_txt + newline
-  return(fixed_txt.replace('\r', ' ').replace('\n', ' ').replace('"', ''))
+  fixed_txt = fixed_txt.replace('\r', ' ').replace('\n', ' ').replace('"', '')
+
+  logger.debug('TESTING // QUERY SUBMITTED TO GOOGLE BOOKS?--------------------------------------')
+  logger.debug(fixed_txt)
+  
+  return(fixed_txt)
 
 text = "Welcom bd tow fdshaf dsaf. gffdsadafdsf Redafdsafdsalkgh? The worst things in life are the best things!"
 
