@@ -8,3 +8,4 @@ node_modules
 logging
 main.log
 setup.log
+/test_images
